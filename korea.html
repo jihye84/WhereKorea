@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>도시 위치 찾기 - 한국</title>
+  <title>어디일까요? - 한국 지리 퀴즈</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body,
     html {
@@ -118,6 +119,14 @@
         transform: translateY(-5px);
       }
     }
+
+    #rank-input-area {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 10px;
+      border: 1px dashed #ffeeba;
+    }
   </style>
 </head>
 
@@ -142,10 +151,17 @@
       <h4 class="fw-bold mb-1" id="resultTitle">결과</h4>
       <div class="accuracy-val mb-2"><span id="finalAccuracy">0</span>%</div>
       <p id="messageText" class="x-small text-muted mb-3"></p>
+
+      <div id="rank-input-area" style="display:none;">
+        <p class="small fw-bold mb-2">🏆 마스터의 이름을 남기세요!</p>
+        <input type="text" id="userName" class="form-control mb-2 text-center" placeholder="이름 입력" maxlength="10">
+        <button id="saveRank" class="btn btn-warning btn-game">명예의 전당 등록</button>
+      </div>
+
       <button id="nextLevel" class="btn btn-primary btn-game" style="display:none;">다음 레벨 도전</button>
       <button id="repeatLevel" class="btn btn-info btn-game text-white" style="display:none;">이 레벨 더 하기</button>
       <button id="tryAgain" class="btn btn-outline-secondary btn-game" style="display:none;">다시 시도하기</button>
-      <button class="btn btn-danger btn-game" onclick="location.href='index.html'">메인으로</button>
+      <button class="btn btn-danger btn-game" onclick="location.href='index.html'">그만하기</button>
     </div>
 
     <div id="info-Container">
@@ -184,11 +200,11 @@
         { name: "제주시", lat: 33.4996, lng: 126.5312, desc: "제주특별자치도청 소재지" }
       ],
       3: [
+        { name: "세종특별자치시", lat: 36.4800, lng: 127.2890, desc: "행정중심복합도시" },
+        { name: "수원시", lat: 37.2636, lng: 127.0286, desc: "경기도청 소재지" },
         { name: "성남시", lat: 37.4200, lng: 127.1265, desc: "IT·판교테크노밸리" },
         { name: "고양시", lat: 37.6584, lng: 126.8320, desc: "일산신도시" },
         { name: "용인시", lat: 37.2411, lng: 127.1776, desc: "반도체 클러스터" },
-        { name: "포항시", lat: 36.0190, lng: 129.3520, desc: "철강 산업의 중심" },
-        { name: "천안시", lat: 36.8151, lng: 127.1139, desc: "충남 최대 도시" },
         { name: "부천시", lat: 37.5034, lng: 126.7660, desc: "문화콘텐츠 도시" },
         { name: "안산시", lat: 37.3219, lng: 126.8309, desc: "산업·외국인 중심" },
         { name: "안양시", lat: 37.3943, lng: 126.9568, desc: "수도권 남부 핵심" },
@@ -235,9 +251,9 @@
         { name: "순천시", lat: 34.9507, lng: 127.4872, desc: "순천만 습지" },
         { name: "나주시", lat: 35.0160, lng: 126.7108, desc: "에너지 혁신도시" },
         { name: "광양시", lat: 34.9407, lng: 127.6959, desc: "포스코 제철" },
+        { name: "포항시", lat: 36.0190, lng: 129.3520, desc: "철강 산업의 중심" },
         { name: "경주시", lat: 35.8562, lng: 129.2247, desc: "천년고도 신라 수도" },
         { name: "김천시", lat: 36.1394, lng: 128.1136, desc: "교통의 요충지" },
-        { name: "구미시", lat: 36.1195, lng: 128.3443, desc: "전자 산업의 메카" },
         { name: "영주시", lat: 36.8057, lng: 128.6241, desc: "소백산 관문" },
         { name: "영천시", lat: 35.9733, lng: 128.9386, desc: "별의 도시" },
         { name: "상주시", lat: 36.4159, lng: 128.1595, desc: "곶감 도시" },
@@ -253,8 +269,8 @@
         { name: "서귀포시", lat: 33.2541, lng: 126.5601, desc: "한라산 남쪽 도시" }
       ],
       4: [
-        { name: "연천군", lat: 38.0964, lng: 127.0748, desc: "비무장지대 접경의 평화 생태지역" },
-        { name: "가평군", lat: 37.8314, lng: 127.5096, desc: "계곡과 호수가 어우러진 휴양도시" },
+        { name: "연천군", lat: 38.0964, lng: 127.0748, desc: "비무장지대 접경 생태지역" },
+        { name: "가평군", lat: 37.8314, lng: 127.5096, desc: "계곡과 호수가 어우러진 휴양지" },
         { name: "양평군", lat: 37.4919, lng: 127.4875, desc: "수도권 대표 수변 자연친화 도시" },
         { name: "홍천군", lat: 37.6972, lng: 127.8888, desc: "넓은 산림과 청정 계곡을 품은 고장" },
         { name: "횡성군", lat: 37.4912, lng: 127.9856, desc: "전국 최고 한우와 농촌 체험 중심지" },
@@ -280,7 +296,7 @@
         { name: "서천군", lat: 36.0776, lng: 126.6917, desc: "국립생태원과 철새가 머무는 지역" },
         { name: "청양군", lat: 36.4583, lng: 126.8028, desc: "칠갑산과 고추로 유명한 농촌지역" },
         { name: "예산군", lat: 36.6808, lng: 126.8452, desc: "윤봉길 의사의 정신이 깃든 고장" },
-        { name: "태안군", lat: 36.7456, lng: 126.2979, desc: "서해안 해변과 해양 관광의 중심지" },
+        { name: "태안군", lat: 36.7456, lng: 126.2979, desc: "서해안 해변 관광지" },
         { name: "완주군", lat: 35.9058, lng: 127.1622, desc: "전주 배후 산업과 생태 도시로 성장" },
         { name: "진안군", lat: 35.7917, lng: 127.4242, desc: "마이산과 고원 지대가 아름다운 고장" },
         { name: "무주군", lat: 36.0064, lng: 127.6628, desc: "덕유산 설경과 태권도 문화의 도시" },
@@ -290,9 +306,9 @@
         { name: "고창군", lat: 35.4349, lng: 126.7018, desc: "고인돌과 청보리밭이 유명한 고장" },
         { name: "부안군", lat: 35.7316, lng: 126.7335, desc: "변산반도 국립공원과 해안 절경" },
         { name: "담양군", lat: 35.3215, lng: 126.9881, desc: "대나무 숲과 한옥이 어우러진 생태도시" },
-        { name: "곡성군", lat: 35.2820, lng: 127.2920, desc: "증기기관차와 섬진강이 흐르는 마을" },
-        { name: "구례군", lat: 35.2020, lng: 127.4620, desc: "지리산 자락의 전통과 자연이 공존" },
-        { name: "고흥군", lat: 34.6111, lng: 127.2853, desc: "우주센터와 남해안 청정 해역의 고장" },
+        { name: "곡성군", lat: 35.2820, lng: 127.2920, desc: "섬진강이 흐르는 기차 마을" },
+        { name: "구례군", lat: 35.2020, lng: 127.4620, desc: "지리산 자락의 자연과 전통" },
+        { name: "고흥군", lat: 34.6111, lng: 127.2853, desc: "우주센터와 청정 해역의 고장" },
         { name: "보성군", lat: 34.7710, lng: 127.0809, desc: "녹차밭과 바다 풍경이 아름다운 도시" },
         { name: "화순군", lat: 35.0615, lng: 127.0023, desc: "고인돌과 온천 자원이 풍부한 고장" },
         { name: "장흥군", lat: 34.6811, lng: 126.9075, desc: "문학과 약초가 살아 숨 쉬는 고장" },
@@ -302,7 +318,7 @@
         { name: "함평군", lat: 35.0650, lng: 126.5167, desc: "나비축제와 친환경 농업의 고장" },
         { name: "영광군", lat: 35.2776, lng: 126.5124, desc: "굴비와 원전 산업이 함께하는 지역" },
         { name: "장성군", lat: 35.3018, lng: 126.7843, desc: "황룡강과 숲길이 아름다운 생태도시" },
-        { name: "완도군", lat: 34.3119, lng: 126.7551, desc: "청정 바다와 해조류 산업의 중심" },
+        { name: "완도군", lat: 34.3119, lng: 126.7551, desc: "청정 바다와 전복 산업의 중심" },
         { name: "진도군", lat: 34.4869, lng: 126.2636, desc: "신비의 바닷길과 민속 문화의 고장" },
         { name: "신안군", lat: 34.8265, lng: 126.1088, desc: "천사섬과 염전 풍경이 이어진 군도" },
         { name: "의성군", lat: 36.3526, lng: 128.6971, desc: "마늘 재배와 전통 농업이 발달한 지역" },
@@ -319,7 +335,7 @@
         { name: "의령군", lat: 35.3222, lng: 128.2611, desc: "의병 정신과 농촌 전통이 살아있는 곳" },
         { name: "함안군", lat: 35.2720, lng: 128.4060, desc: "아라가야 유적과 평야 농업 중심지" },
         { name: "창녕군", lat: 35.5445, lng: 128.4925, desc: "우포늪과 철새 생태가 살아있는 고장" },
-        { name: "남해군", lat: 34.8370, lng: 127.8924, desc: "바다와 섬이 어우러진 남해의 보물섬" },
+        { name: "남해군", lat: 34.8370, lng: 127.8924, desc: "아름다운 보물섬" },
         { name: "하동군", lat: 35.0673, lng: 127.7511, desc: "섬진강과 녹차밭이 이어진 청정 지역" },
         { name: "산청군", lat: 35.4156, lng: 127.8731, desc: "한방과 약초 산업이 발달한 산촌 도시" },
         { name: "함양군", lat: 35.5204, lng: 127.7272, desc: "지리산 자락과 전통 문화가 남은 곳" },
@@ -327,7 +343,6 @@
         { name: "합천군", lat: 35.5667, lng: 128.1650, desc: "해인사와 호수 풍경이 아름다운 고장" }
       ],
       5: [
-        // 서울특별시
         { city: "서울", name: "종로구", lat: 37.5735, lng: 126.9790, desc: "궁궐과 역사 문화 중심지" },
         { city: "서울", name: "중구", lat: 37.5638, lng: 126.9976, desc: "행정과 금융 관광 핵심" },
         { city: "서울", name: "용산구", lat: 37.5326, lng: 126.9906, desc: "국제 문화와 교통 요충지" },
@@ -353,62 +368,35 @@
         { city: "서울", name: "강남구", lat: 37.5172, lng: 127.0473, desc: "경제와 트렌드의 중심" },
         { city: "서울", name: "송파구", lat: 37.5145, lng: 127.1059, desc: "잠실과 잠실운동장" },
         { city: "서울", name: "강동구", lat: 37.5301, lng: 127.1238, desc: "한강 동쪽 끝 주거지" },
-
-        // 부산광역시
         { city: "부산", name: "중구", lat: 35.1063, lng: 129.0324, desc: "남포동 국제시장 상권" },
         { city: "부산", name: "서구", lat: 35.0979, lng: 129.0246, desc: "송도해수욕장과 의료 거점" },
-        { city: "부산", name: "동구", lat: "35.1293", lng: "129.0453", desc: "부산역과 항만 물류" },
-        { city: "부산", name: "영도구", lat: "35.0912", lng: "129.0677", desc: "태종대와 해양 산업" },
-        { city: "부산", name: "부산진구", lat: "35.1629", lng: "129.0531", desc: "서면 도심의 상업 중심" },
-        { city: "부산", name: "동래구", lat: "35.2052", lng: "129.0837", desc: "온천과 유서 깊은 교육지" },
-        { city: "부산", name: "남구", lat: "35.1367", lng: "129.0840", desc: "대학로와 신선대 부두" },
-        { city: "부산", name: "북구", lat: "35.1973", lng: "128.9911", desc: "낙동강변 대규모 주거지" },
-        { city: "부산", name: "해운대구", lat: "35.1631", lng: "129.1636", desc: "글로벌 관광과 초고층 도시" },
-        { city: "부산", name: "사하구", lat: "35.1044", lng: "128.9680", desc: "다대포와 을숙도 생태" },
-        { city: "부산", name: "금정구", lat: "35.2429", lng: "129.0922", desc: "범어사와 부산대 인접" },
-        { city: "부산", name: "강서구", lat: "35.2122", lng: "128.9805", desc: "가덕도 신공항 예정지" },
-        { city: "부산", name: "연제구", lat: "35.1762", lng: "129.0794", desc: "부산시청 행정 중심지" },
-        { city: "부산", name: "수영구", lat: "35.1456", lng: "129.1132", desc: "광안대교와 해변 문화" },
-        { city: "부산", name: "사상구", lat: "35.1526", lng: "128.9914", desc: "교통 허브와 산업 거점"},
-
-        // 대구광역시
+        { city: "부산", name: "동구", lat: 35.1293, lng: 129.0453, desc: "부산역과 항만 물류" },
+        { city: "부산", name: "영도구", lat: 35.0912, lng: 129.0677, desc: "태종대와 해양 산업" },
+        { city: "부산", name: "부산진구", lat: 35.1629, lng: 129.0531, desc: "서면 도심 상업 중심" },
+        { city: "부산", name: "동래구", lat: 35.2052, lng: 129.0837, desc: "전통 교육지와 온천지" },
+        { city: "부산", name: "남구", lat: 35.1367, lng: 129.0840, desc: "대학로와 신선대 부두" },
+        { city: "부산", name: "북구", lat: 35.1973, lng: 128.9911, desc: "낙동강변 대규모 주거지" },
+        { city: "부산", name: "해운대구", lat: 35.1631, lng: 129.1636, desc: "국제 관광과 해변 도시" },
+        { city: "부산", name: "사하구", lat: 35.1044, lng: 128.9680, desc: "다대포와 을숙도 생태" },
+        { city: "부산", name: "금정구", lat: 35.2429, lng: 129.0922, desc: "금정산과 부산대 인접" },
+        { city: "부산", name: "강서구", lat: 35.2122, lng: 128.9805, desc: "가덕도 신공항 예정지" },
+        { city: "부산", name: "연제구", lat: 35.1762, lng: 129.0794, desc: "부산시청 행정 중심지" },
+        { city: "부산", name: "수영구", lat: 35.1456, lng: 129.1132, desc: "광안대교와 해변 문화" },
+        { city: "부산", name: "사상구", lat: 35.1526, lng: 128.9914, desc: "교통 허브와 산업 거점" },
         { city: "대구", name: "중구", lat: 35.8694, lng: 128.6062, desc: "동성로 대구의 중심" },
-        { city: "대구", name: "동구", lat: 35.8865, lng: 128.6354, desc: "신천과 대구공항" },
-        { city: "대구", name: "서구", lat: 35.8715, lng: 128.5591, desc: "전통 상권과 주거 단지" },
-        { city: "대구", name: "남구", lat: 35.8464, lng: 128.5974, desc: "앞산 공원 자락 주거지" },
-        { city: "대구", name: "북구", lat: 35.8894, lng: 128.5805, desc: "엑스코와 유통단지" },
+        { city: "대구", name: "동구", lat: 35.8865, lng: 128.6354, desc: "대구공항과 신천" },
         { city: "대구", name: "수성구", lat: 35.8580, lng: 128.6306, desc: "교육 명문과 금융 중심" },
         { city: "대구", name: "달서구", lat: 35.8299, lng: 128.5327, desc: "두류공원과 최대 인구 구" },
-
-        // 인천광역시
-        { city: "인천", name: "중구", lat: 37.4738, lng: 126.6216, desc: "차이나타운과 인천항" },
-        { city: "인천", name: "동구", lat: 37.4730, lng: 126.6433, desc: "근대 산업 유산 지역" },
-        { city: "인천", name: "미추홀구", lat: 37.4637, lng: 126.6503, desc: "주거와 대학 인접 지구" },
+        { city: "인천", name: "중구", lat: 37.4738, lng: 126.6216, desc: "인천항과 차이나타운" },
         { city: "인천", name: "연수구", lat: 37.4102, lng: 126.6783, desc: "송도 국제 업무 지구" },
-        { city: "인천", name: "남동구", lat: 37.4474, lng: 126.7310, desc: "인천시청과 공단 밀집" },
         { city: "인천", name: "부평구", lat: 37.5070, lng: 126.7219, desc: "부평역 중심의 상업지" },
-        { city: "인천", name: "계양구", lat: 37.5374, lng: 126.7378, desc: "공항 인접 북부 주거지" },
         { city: "인천", name: "서구", lat: 37.5454, lng: 126.6750, desc: "청라 신도시와 환경 특구" },
-
-        // 광주광역시
         { city: "광주", name: "동구", lat: 35.1467, lng: 126.9233, desc: "충장로 광주의 원도심" },
         { city: "광주", name: "서구", lat: 35.1525, lng: 126.8914, desc: "상무지구 행정 타운" },
-        { city: "광주", name: "남구", lat: 35.1333, lng: 126.9023, desc: "교육 시설 밀집 지역" },
-        { city: "광주", name: "북구", lat: 35.1740, lng: 126.9126, desc: "전남대와 광주역 인근" },
-        { city: "광주", name: "광산구", lat: 35.1396, lng: 126.7915, desc: "광주공항과 송정역 거점" },
-
-        // 대전광역시
-        { city: "대전", name: "동구", lat: 36.3295, lng: 127.4541, desc: "대전역과 전통 시장" },
-        { city: "대전", name: "중구", lat: 36.3254, lng: 127.4214, desc: "으능정이 거리 상권" },
-        { city: "대전", name: "서구", lat: 36.3510, lng: 127.3795, desc: "둔산동 정부청사 단지" },
-        { city: "대전", name: "유성구", lat: 36.3621, lng: 127.3560, desc: "대덕특구와 과학의 도시" },
-        { city: "대전", name: "대덕구", lat: 36.3863, lng: 127.4243, desc: "신탄진과 공업 거점" },
-
-        // 울산광역시
-        { city: "울산", name: "중구", lat: 35.5694, lng: 129.3324, desc: "태화강변 역사 도심" },
+        { city: "대전", name: "서구", lat: 36.3510, lng: 127.3795, desc: "정부청사 행정 중심지" },
+        { city: "대전", name: "유성구", lat: 36.3621, lng: 127.3560, desc: "대덕특구와 과학 도시" },
         { city: "울산", name: "남구", lat: 35.5438, lng: 129.3307, desc: "공단과 상업의 중심" },
-        { city: "울산", name: "동구", lat: 35.5049, lng: 129.4166, desc: "현대중공업 조선 산업" },
-        { city: "울산", name: "북구", lat: 35.5824, lng: 129.3614, desc: "현대자동차 생산 거점" }
+        { city: "울산", name: "북구", lat: 35.5824, lng: 129.3614, desc: "현대차 생산 거점" }
       ]
     };
 
@@ -453,6 +441,7 @@
       document.getElementById("repeatLevel").onclick = () => { initMap(); resetUI(); };
       document.getElementById("tryAgain").onclick = () => { initMap(); resetUI(); };
       document.getElementById("nextLevel").onclick = () => { level++; initMap(); resetUI(); };
+      document.getElementById("saveRank").onclick = saveToHallOfFame;
 
       startNewRound();
     }
@@ -460,6 +449,7 @@
     function resetUI() {
       document.getElementById("game-play-area").style.display = "block";
       document.getElementById("final-result-area").style.display = "none";
+      document.getElementById("rank-input-area").style.display = "none";
     }
 
     function startNewRound() {
@@ -467,14 +457,10 @@
       document.getElementById("info-Container").style.display = "none";
       document.getElementById("showResultBtn").style.display = "none";
       answerMarker.setMap(null); playerMarker.setMap(null);
-
       currentCity = cityPool.pop();
       roundCount++;
-
-      // 💡 레벨 5일 때는 도시 이름(서울, 부산 등)을 앞에 붙여서 출력
       let displayName = (level === 5) ? `${currentCity.city} ${currentCity.name}` : currentCity.name;
       document.getElementById("cityName").innerText = displayName;
-
       document.getElementById("alarm").innerText = "지도를 터치하여 위치를 잡으세요!";
       updateScoreboard();
     }
@@ -483,51 +469,43 @@
       document.getElementById("submitGuess").style.display = "none";
       document.getElementById("info-Container").style.display = "block";
       const cityPos = new google.maps.LatLng(currentCity.lat, currentCity.lng);
-      const playerPos = playerMarker.getPosition();
-      const distance = google.maps.geometry.spherical.computeDistanceBetween(playerPos, cityPos);
+      const distance = google.maps.geometry.spherical.computeDistanceBetween(playerMarker.getPosition(), cityPos);
 
-      let accuracy;
-      let threshold;
-      let penalty;
+      let accuracy, threshold, penalty;
+      if (level === 5) { threshold = 5000; penalty = 800; }
+      else if (level >= 3) { threshold = 15000; penalty = 1500; }
+      else { threshold = 20000; penalty = 2000; }
 
-      if (level === 5) {
-        threshold = 5000;  // 5km 이내여야 100점
-        penalty = 800;
-      } else if (level >= 3) {
-        threshold = 15000; // 15km 이내 100점
-        penalty = 1500;
-      } else {
-        threshold = 20000; // 레벨 1-2는 20km까지 100점
-        penalty = 2000;
-      }
-
-      if (distance <= threshold) {
-        accuracy = 100;
-      } else {
-        accuracy = Math.max(0, 100 - (distance - threshold) / penalty);
-      }
-
+      accuracy = (distance <= threshold) ? 100 : Math.max(0, 100 - (distance - threshold) / penalty);
       totalAccuracy += accuracy;
 
-      let feedback = accuracy >= 99
-        ? "<span class='perfect-text'>PERFECT!</span>"
-        : `<span id='result-accuracy-text'>정확도: ${accuracy.toFixed(1)}%</span>`;
-
+      let feedback = accuracy >= 99 ? "<span class='perfect-text'>PERFECT!</span>" : `<span id='result-accuracy-text'>정확도: ${accuracy.toFixed(1)}%</span>`;
       document.getElementById("alarm").innerHTML = `${feedback}<br><small class='text-muted'>오차: ${(distance / 1000).toFixed(1)}km</small>`;
 
       answerMarker.setPosition(cityPos); answerMarker.setMap(map);
       document.getElementById("descriptionContainer").innerText = currentCity.desc;
-      updateScoreboard();
 
       if (roundCount < 3) document.getElementById("nextQuestion").style.display = "block";
       else document.getElementById("showResultBtn").style.display = "block";
+      updateScoreboard();
     }
 
     function updateScoreboard() {
       const avg = roundCount === 0 ? 0 : (totalAccuracy / roundCount);
       document.getElementById("avg-accuracy").innerText = avg.toFixed(1);
-      document.getElementById("level-display").innerText = level;
-      document.getElementById("total-question").innerText = roundCount;
+    }
+
+    function fireConfetti() {
+      var duration = 5 * 1000;
+      var animationEnd = Date.now() + duration;
+      var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+      var interval = setInterval(function () {
+        var timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) return clearInterval(interval);
+        var particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.2 + 0.1, y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * 0.2 + 0.7, y: Math.random() - 0.2 } }));
+      }, 250);
     }
 
     function showFinalResult() {
@@ -536,22 +514,34 @@
       document.getElementById("final-result-area").style.display = "block";
       const finalAvg = (totalAccuracy / 3).toFixed(1);
       document.getElementById("finalAccuracy").innerText = finalAvg;
-
       const successCut = (level === 5) ? 85 : 75;
       const isSuccess = finalAvg >= successCut;
 
-      if (level < 5) {
-        document.getElementById("resultTitle").innerText = isSuccess ? "레벨 통과! 🎉" : "아쉬워요! 😅";
-        document.getElementById("messageText").innerText = isSuccess ? "다음 단계로 넘어갈 준비가 되셨나요?" : `평균 ${successCut}% 이상을 달성해야 합니다.`;
-        document.getElementById("nextLevel").style.display = isSuccess ? "block" : "none";
-        document.getElementById("repeatLevel").style.display = isSuccess ? "block" : "none";
-        document.getElementById("tryAgain").style.display = isSuccess ? "none" : "block";
+      if (level === 5 && isSuccess) {
+        document.getElementById("resultTitle").innerText = "🏆 지리 마스터 등극! 🏆";
+        document.getElementById("messageText").innerText = "대단합니다! 명예의 전당에 이름을 남기세요.";
+        document.getElementById("rank-input-area").style.display = "block";
+        fireConfetti();
+      } else if (isSuccess) {
+        document.getElementById("resultTitle").innerText = "레벨 통과! 🎉";
+        document.getElementById("messageText").innerText = "다음 단계로 도전하시겠습니까?";
+        document.getElementById("nextLevel").style.display = (level < 5) ? "block" : "none";
       } else {
-        document.getElementById("resultTitle").innerText = isSuccess ? "마스터 달성! 🏆" : "마지막 고비! 😅";
-        document.getElementById("messageText").innerText = isSuccess ? "축하합니다! 한국 지리의 진정한 마스터가 되셨습니다." : `레벨 5 마스터를 위해 평균 ${successCut}% 이상 도전하세요!`;
-        document.getElementById("repeatLevel").style.display = "block";
-        document.getElementById("tryAgain").style.display = isSuccess ? "none" : "block";
+        document.getElementById("resultTitle").innerText = "아쉬워요! 😅";
+        document.getElementById("messageText").innerText = `평균 ${successCut}% 이상이 필요합니다.`;
+        document.getElementById("tryAgain").style.display = "block";
       }
+      document.getElementById("repeatLevel").style.display = isSuccess ? "block" : "none";
+    }
+
+    function saveToHallOfFame() {
+      const name = document.getElementById("userName").value || "무명 마스터";
+      const score = (totalAccuracy / 3).toFixed(1);
+      const entry = { name, score, date: new Date().toLocaleDateString() };
+      let fameData = JSON.parse(localStorage.getItem('hallOfFame')) || [];
+      fameData.unshift(entry);
+      localStorage.setItem('hallOfFame', JSON.stringify(fameData.slice(0, 5)));
+      location.href = 'index.html';
     }
   </script>
   <script
