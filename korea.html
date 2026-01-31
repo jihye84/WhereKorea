@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>도시 위치 찾기 - 한국</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .exit-to-index {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 2000;
+      padding: 8px 16px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+
+    #ui-overlay {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 15px;
+      width: 280px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    @media (max-width: 576px) {
+      #ui-overlay {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
+    }
+
+    #info-Container {
+      margin-top: 10px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      display: none;
+      border-left: 5px solid #28a745;
+    }
+
+    .btn-game {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      font-weight: bold;
+      border-radius: 10px;
+    }
+
+    .final-result-area {
+      text-align: center;
+      display: none;
+      padding: 10px 0;
+    }
+
+    .accuracy-val {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #0d6efd;
+    }
+
+    .perfect-text {
+      color: #ffc107;
+      font-weight: bold;
+      animation: bounce 0.5s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="exit-to-index" onclick="location.href='index.html'">🏠 메인으로</button>
+
+  <div id="ui-overlay">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="badge bg-dark">레벨 <span id="level-display">1</span></span>
+      <span class="small text-muted">평균 정확도: <b id="avg-accuracy" class="text-primary">0</b>%</span>
+    </div>
+
+    <div id="game-play-area">
+      <h2 id="cityName" class="text-primary text-center fw-bold mb-2">도시 이름</h2>
+      <p id="alarm" class="small text-muted text-center mb-2">지도를 터치해 보세요!</p>
+      <button id="submitGuess" class="btn btn-primary btn-game" style="display:none;">정답 확인</button>
+      <button id="nextQuestion" class="btn btn-success btn-game" style="display:none;">다음 문제</button>
+    </div>
+
+    <div id="final-result-area" class="final-result-area">
+      <h4 class="fw-bold mb-1" id="resultTitle">결과</h4>
+      <div class="accuracy-val mb-2"><span id="finalAccuracy">0</span>%</div>
+      <p id="messageText" class="x-small text-muted mb-3"></p>
+      <button id="nextLevel" class="btn btn-primary btn-game" style="display:none;">다음 레벨 도전</button>
+      <button id="repeatLevel" class="btn btn-info btn-game text-white" style="display:none;">이 레벨 더 하기</button>
+      <button id="tryAgain" class="btn btn-outline-secondary btn-game" style="display:none;">다시 시도하기</button>
+      <button class="btn btn-danger btn-game" onclick="location.href='index.html'">메인으로</button>
+    </div>
+
+    <div id="info-Container">
+      <div id="descriptionContainer" class="small mb-1" style="font-size: 0.85rem; line-height: 1.4;"></div>
+      <div class="pt-2 border-top d-flex justify-content-between text-muted" style="font-size: 0.7rem;">
+        <span>라운드</span>
+        <span><b id="total-question">0</b> / 3</span>
+      </div>
+      <button id="showResultBtn" class="btn btn-warning btn-game mt-2" style="display:none;">최종 결과 확인</button>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    const levelData = {
+      1: [
+        { name: "서울특별시", lat: 37.5665, lng: 126.9780, desc: "대한민국의 수도" },
+        { name: "부산광역시", lat: 35.1796, lng: 129.0756, desc: "제1의 항구도시" },
+        { name: "대구광역시", lat: 35.8714, lng: 128.6014, desc: "내륙 분지 도시" },
+        { name: "인천광역시", lat: 37.4563, lng: 126.6052, desc: "국제공항이 있는 관문" },
+        { name: "광주광역시", lat: 35.1595, lng: 126.9121, desc: "호남의 중심지" },
+        { name: "대전광역시", lat: 36.3504, lng: 127.3845, desc: "과학기술의 도시" },
+        { name: "울산광역시", lat: 35.5384, lng: 129.3114, desc: "산업의 수도" },
+        { name: "세종특별자치시", lat: 36.4800, lng: 127.2890, desc: "행정중심복합도시" }
+      ],
+      2: [
+        { name: "수원시", lat: 37.2636, lng: 127.0286, desc: "경기도청 소재지" },
+        { name: "춘천시", lat: 37.8813, lng: 127.7298, desc: "강원특별자치도청 소재지" },
+        { name: "청주시", lat: 36.6424, lng: 127.4890, desc: "충북도청 소재지" },
+        { name: "홍성군", lat: 36.6013, lng: 126.6608, desc: "충남도청 소재지 (내포신도시)" },
+        { name: "전주시", lat: 35.8242, lng: 127.1480, desc: "전북도청 소재지" },
+        { name: "무안군", lat: 34.9904, lng: 126.4817, desc: "전남도청 소재지" },
+        { name: "안동시", lat: 36.5684, lng: 128.7294, desc: "경북도청 소재지" },
+        { name: "창원시", lat: 35.2279, lng: 128.6811, desc: "경남도청 소재지" },
+        { name: "제주시", lat: 33.4996, lng: 126.5312, desc: "제주특별자치도청 소재지" }
+      ],
+      3: [
+        { name: "천안시", lat: 36.8151, lng: 127.1139, desc: "충남 최대 도시" },
+        { name: "포항시", lat: 36.0190, lng: 129.3520, desc: "철강 산업의 중심" },
+        { name: "원주시", lat: 37.3422, lng: 127.9202, desc: "강원권 최대 도시" },
+        { name: "구미시", lat: 36.1195, lng: 128.3443, desc: "전자 산업의 메카" },
+        { name: "목포시", lat: 34.8118, lng: 126.3922, desc: "항구와 근대 역사의 도시" },
+        { name: "진주시", lat: 35.1803, lng: 128.1076, desc: "서부 경남의 교육 도시" },
+        { name: "보령시", lat: 36.3332, lng: 126.6128, desc: "머드 축제의 고장" },
+        { name: "경주시", lat: 35.8562, lng: 129.2247, desc: "천년고도 신라 수도" }
+      ],
+      4: [
+        { name: "평창군", lat: 37.3705, lng: 128.3905, desc: "동계 올림픽의 고장" },
+        { name: "울릉군", lat: 37.4843, lng: 130.9056, desc: "동해의 보석 울릉도" },
+        { name: "완도군", lat: 34.3114, lng: 126.7551, desc: "전복과 청정 바다의 고장" },
+        { name: "강화군", lat: 37.7461, lng: 126.4878, desc: "지붕 없는 박물관" },
+        { name: "태안군", lat: 36.7455, lng: 126.2974, desc: "아름다운 서해 해안선" },
+        { name: "영월군", lat: 37.1833, lng: 128.4611, desc: "동강 절경과 산촌의 고장" },
+        { name: "부여군", lat: 36.2750, lng: 126.9094, desc: "백제 문화유산의 중심" },
+        { name: "함평군", lat: 35.0660, lng: 126.5164, desc: "나비 축제가 열리는 곳" }
+      ],
+      5: [
+        { name: "사하구", lat: 35.1044, lng: 128.9680, desc: "부산의 서남쪽 구" },
+        { name: "영도구", lat: 35.0912, lng: 129.0677, desc: "부산항 앞바다의 섬 구" },
+        { name: "도봉구", lat: 37.6688, lng: 127.0471, desc: "서울의 북쪽 끝 구" },
+        { name: "달서구", lat: 35.8299, lng: 128.5327, desc: "대구 최대 인구 거주구" },
+        { name: "광산구", lat: 35.1396, lng: 126.7915, desc: "광주의 관문이자 산단 구" },
+        { name: "수영구", lat: 35.1456, lng: 129.1132, desc: "광안리 해변이 있는 구" },
+        { name: "노원구", lat: 37.6542, lng: 127.0568, desc: "서울의 주거 교육 중심" },
+        { name: "부평구", lat: 37.5070, lng: 126.7219, desc: "인천의 인구 밀집 구" }
+      ]
+    };
+
+    // 💡 메인에서 선택한 레벨 가져오기 (없으면 1로 시작)
+    let level = parseInt(localStorage.getItem('selectedLevel')) || 1;
+    let cityPool = [], map, playerMarker, answerMarker, currentCity, totalAccuracy = 0, roundCount = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function initMap() {
+      totalAccuracy = 0;
+      roundCount = 0;
+
+      // 현재 레벨 표시 업데이트
+      document.getElementById("level-display").innerText = level;
+
+      const targetData = levelData[level] || levelData[1];
+      cityPool = shuffle([...targetData]);
+
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 36.5, lng: 127.5 }, zoom: 7, mapTypeId: "satellite", disableDefaultUI: true, gestureHandling: "greedy"
+      });
+
+      map.data.loadGeoJson('https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2013/json/skorea_municipalities_geo.json');
+      map.data.setStyle({ fillColor: 'transparent', strokeColor: '#ffffff', strokeWeight: 0.6, strokeOpacity: 0.4, clickable: false });
+
+      playerMarker = new google.maps.Marker({ map: null, icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" });
+      answerMarker = new google.maps.Marker({ map: null, icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" });
+
+      map.addListener("click", (event) => {
+        if (document.getElementById("info-Container").style.display === "none") {
+          playerMarker.setMap(map); playerMarker.setPosition(event.latLng);
+          document.getElementById("submitGuess").style.display = "block";
+        }
+      });
+
+      document.getElementById("submitGuess").onclick = checkAnswer;
+      document.getElementById("nextQuestion").onclick = startNewRound;
+      document.getElementById("showResultBtn").onclick = showFinalResult;
+      document.getElementById("repeatLevel").onclick = () => { initMap(); resetUI(); };
+      document.getElementById("tryAgain").onclick = () => { initMap(); resetUI(); };
+      document.getElementById("nextLevel").onclick = () => { level++; initMap(); resetUI(); };
+
+      startNewRound();
+    }
+
+    function resetUI() {
+      document.getElementById("game-play-area").style.display = "block";
+      document.getElementById("final-result-area").style.display = "none";
+      document.getElementById("nextLevel").style.display = "none";
+      document.getElementById("repeatLevel").style.display = "none";
+      document.getElementById("tryAgain").style.display = "none";
+    }
+
+    function startNewRound() {
+      document.getElementById("nextQuestion").style.display = "none";
+      document.getElementById("info-Container").style.display = "none";
+      document.getElementById("showResultBtn").style.display = "none";
+      answerMarker.setMap(null); playerMarker.setMap(null);
+
+      currentCity = cityPool.pop();
+      roundCount++;
+      document.getElementById("cityName").innerText = currentCity.name;
+      document.getElementById("alarm").innerText = "지도에서 위치를 터치하세요!";
+      updateScoreboard();
+    }
+
+    function checkAnswer() {
+      document.getElementById("submitGuess").style.display = "none";
+      document.getElementById("info-Container").style.display = "block";
+      const cityPos = new google.maps.LatLng(currentCity.lat, currentCity.lng);
+      const playerPos = playerMarker.getPosition();
+
+      // 💡 geometry 라이브러리 활용 거리 계산
+      const distance = google.maps.geometry.spherical.computeDistanceBetween(playerPos, cityPos);
+
+      let accuracy;
+      let threshold = (level <= 2) ? 15000 : 12000; // 지혜님 맞춤형 관대한 기준
+
+      if (distance <= threshold) {
+        accuracy = 100;
+      } else {
+        accuracy = Math.max(0, 100 - (distance - threshold) / 1500);
+      }
+
+      totalAccuracy += accuracy;
+      let feedback = accuracy >= 98 ? "<span class='perfect-text'>PERFECT! 정확해요!</span>" : `오차: <b>${(distance / 1000).toFixed(1)}km</b>`;
+      document.getElementById("alarm").innerHTML = `${feedback}<br>정확도: <b>${accuracy.toFixed(1)}%</b>`;
+
+      answerMarker.setPosition(cityPos); answerMarker.setMap(map);
+      document.getElementById("descriptionContainer").innerText = currentCity.desc;
+      updateScoreboard();
+
+      if (roundCount < 3) document.getElementById("nextQuestion").style.display = "block";
+      else document.getElementById("showResultBtn").style.display = "block";
+    }
+
+    function updateScoreboard() {
+      const avg = roundCount === 0 ? 0 : (totalAccuracy / roundCount);
+      document.getElementById("avg-accuracy").innerText = avg.toFixed(1);
+      document.getElementById("level-display").innerText = level;
+      document.getElementById("total-question").innerText = roundCount;
+    }
+
+    function showFinalResult() {
+      document.getElementById("game-play-area").style.display = "none";
+      document.getElementById("info-Container").style.display = "none";
+      document.getElementById("final-result-area").style.display = "block";
+
+      const finalAvg = (totalAccuracy / 3).toFixed(1);
+      document.getElementById("finalAccuracy").innerText = finalAvg;
+      const isSuccess = finalAvg >= 75;
+
+      if (level < 5) {
+        document.getElementById("resultTitle").innerText = isSuccess ? "레벨 통과! 🎉" : "아쉬워요! 😅";
+        document.getElementById("messageText").innerText = isSuccess ? "다음 단계로 넘어갈 준비가 되셨나요?" : "평균 75% 이상을 달성해야 합니다.";
+        document.getElementById("nextLevel").style.display = isSuccess ? "block" : "none";
+        document.getElementById("repeatLevel").style.display = isSuccess ? "block" : "none";
+        document.getElementById("tryAgain").style.display = isSuccess ? "none" : "block";
+      } else {
+        document.getElementById("resultTitle").innerText = isSuccess ? "마스터 달성! 🏆" : "마지막 고비! 😅";
+        document.getElementById("messageText").innerText = isSuccess ? "축하합니다! 한국 지리 마스터가 되셨습니다." : "80%를 넘겨서 최종 마스터에 도전해 보세요!";
+        document.getElementById("repeatLevel").style.display = "block";
+        document.getElementById("tryAgain").style.display = isSuccess ? "none" : "block";
+      }
+    }
+  </script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEGmiiFjkqhyKBRuFfdz3WqpPzLleeDMA&libraries=geometry&callback=initMap"
+    async defer></script>
+</body>
+
+</html>
