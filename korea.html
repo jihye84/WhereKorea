@@ -55,10 +55,27 @@
     @media (max-width: 576px) {
       #ui-overlay {
         top: auto;
-        bottom: 20px;
-        right: 10px;
-        left: 10px;
-        width: calc(100% - 20px);
+        bottom: 15px;
+        right: 15px;
+        left: 15px;
+        width: auto;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(5px);
+      }
+
+      .btn-game {
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+
+      h2 {
+        font-size: 1.4rem;
+        margin-bottom: 5px !important;
+      }
+
+      #info-Container {
+        padding: 8px;
       }
     }
 
@@ -176,229 +193,8 @@
 
   <div id="map"></div>
 
+  <script src="korea.js"></script>
   <script>
-    const levelData = {
-      1: [
-        { name: "서울특별시", lat: 37.5665, lng: 126.9780, desc: "대한민국의 수도" },
-        { name: "부산광역시", lat: 35.1796, lng: 129.0756, desc: "제1의 항구도시" },
-        { name: "대구광역시", lat: 35.8714, lng: 128.6014, desc: "내륙 분지 도시" },
-        { name: "인천광역시", lat: 37.4563, lng: 126.7052, desc: "국제공항이 있는 관문" },
-        { name: "광주광역시", lat: 35.1595, lng: 126.9121, desc: "호남의 중심지" },
-        { name: "대전광역시", lat: 36.3504, lng: 127.3845, desc: "과학기술의 도시" },
-        { name: "울산광역시", lat: 35.5384, lng: 129.3114, desc: "산업의 수도" },
-        { name: "세종특별자치시", lat: 36.4800, lng: 127.2890, desc: "행정중심복합도시" }
-      ],
-      2: [
-        { name: "수원시", lat: 37.2636, lng: 127.0286, desc: "경기도청 소재지" },
-        { name: "춘천시", lat: 37.8813, lng: 127.7298, desc: "강원특별자치도청 소재지" },
-        { name: "청주시", lat: 36.6424, lng: 127.4890, desc: "충북도청 소재지" },
-        { name: "홍성군", lat: 36.6013, lng: 126.6608, desc: "충남도청 소재지 (내포신도시)" },
-        { name: "전주시", lat: 35.8242, lng: 127.1480, desc: "전북도청 소재지" },
-        { name: "무안군", lat: 34.9904, lng: 126.4817, desc: "전남도청 소재지" },
-        { name: "안동시", lat: 36.5684, lng: 128.7294, desc: "경북도청 소재지" },
-        { name: "창원시", lat: 35.2279, lng: 128.6811, desc: "경남도청 소재지" },
-        { name: "제주시", lat: 33.4996, lng: 126.5312, desc: "제주특별자치도청 소재지" }
-      ],
-      3: [
-        { name: "세종특별자치시", lat: 36.4800, lng: 127.2890, desc: "행정중심복합도시" },
-        { name: "수원시", lat: 37.2636, lng: 127.0286, desc: "경기도청 소재지" },
-        { name: "성남시", lat: 37.4200, lng: 127.1265, desc: "IT·판교테크노밸리" },
-        { name: "고양시", lat: 37.6584, lng: 126.8320, desc: "일산신도시" },
-        { name: "용인시", lat: 37.2411, lng: 127.1776, desc: "반도체 클러스터" },
-        { name: "부천시", lat: 37.5034, lng: 126.7660, desc: "문화콘텐츠 도시" },
-        { name: "안산시", lat: 37.3219, lng: 126.8309, desc: "산업·외국인 중심" },
-        { name: "안양시", lat: 37.3943, lng: 126.9568, desc: "수도권 남부 핵심" },
-        { name: "남양주시", lat: 37.6360, lng: 127.2165, desc: "왕숙신도시" },
-        { name: "화성시", lat: 37.1996, lng: 126.8313, desc: "가장 빠르게 성장한 도시" },
-        { name: "평택시", lat: 36.9921, lng: 127.1121, desc: "미군기지·반도체" },
-        { name: "의정부시", lat: 37.7381, lng: 127.0337, desc: "경기 북부 중심" },
-        { name: "시흥시", lat: 37.3799, lng: 126.8031, desc: "산업단지 도시" },
-        { name: "파주시", lat: 37.7599, lng: 126.7800, desc: "DMZ·출판도시" },
-        { name: "김포시", lat: 37.6152, lng: 126.7159, desc: "서울 서북권 관문" },
-        { name: "광명시", lat: 37.4784, lng: 126.8645, desc: "광명뉴타운" },
-        { name: "군포시", lat: 37.3615, lng: 126.9352, desc: "수도권 주거도시" },
-        { name: "하남시", lat: 37.5393, lng: 127.2149, desc: "미사·교산신도시" },
-        { name: "오산시", lat: 37.1499, lng: 127.0774, desc: "미군공군기지" },
-        { name: "이천시", lat: 37.2798, lng: 127.4424, desc: "도자기 도시" },
-        { name: "안성시", lat: 37.0078, lng: 127.2799, desc: "유기농·농업도시" },
-        { name: "의왕시", lat: 37.3446, lng: 126.9683, desc: "철도·물류 거점" },
-        { name: "여주시", lat: 37.2983, lng: 127.6375, desc: "남한강 도시" },
-        { name: "양주시", lat: 37.7853, lng: 127.0459, desc: "경기북부 산업" },
-        { name: "동두천시", lat: 37.9037, lng: 127.0602, desc: "접경지역 도시" },
-        { name: "과천시", lat: 37.4292, lng: 126.9870, desc: "정부청사 도시" },
-        { name: "구리시", lat: 37.5943, lng: 127.1296, desc: "한강 인접 도시" },
-        { name: "강릉시", lat: 37.7519, lng: 128.8761, desc: "동해안 관광도시" },
-        { name: "동해시", lat: 37.5247, lng: 129.1143, desc: "무역항 도시" },
-        { name: "속초시", lat: 38.2070, lng: 128.5918, desc: "설악산 관문" },
-        { name: "삼척시", lat: 37.4499, lng: 129.1657, desc: "동해안 산업도시" },
-        { name: "태백시", lat: 37.1640, lng: 128.9856, desc: "석탄산업 도시" },
-        { name: "충주시", lat: 36.9910, lng: 127.9260, desc: "중부내륙 중심" },
-        { name: "제천시", lat: 37.1326, lng: 128.1910, desc: "한방 산업" },
-        { name: "공주시", lat: 36.4466, lng: 127.1190, desc: "백제 고도" },
-        { name: "보령시", lat: 36.3332, lng: 126.6128, desc: "머드 축제의 고장" },
-        { name: "아산시", lat: 36.7900, lng: 127.0020, desc: "삼성·온천도시" },
-        { name: "서산시", lat: 36.7849, lng: 126.4503, desc: "석유화학 산업" },
-        { name: "논산시", lat: 36.1870, lng: 127.0988, desc: "군사도시" },
-        { name: "계룡시", lat: 36.2744, lng: 127.2488, desc: "국방 수도" },
-        { name: "당진시", lat: 36.8890, lng: 126.6459, desc: "철강 항만도시" },
-        { name: "군산시", lat: 35.9676, lng: 126.7369, desc: "근대항구 도시" },
-        { name: "익산시", lat: 35.9483, lng: 126.9575, desc: "백제 유적" },
-        { name: "정읍시", lat: 35.5699, lng: 126.8553, desc: "내장산 도시" },
-        { name: "남원시", lat: 35.4164, lng: 127.3904, desc: "춘향의 도시" },
-        { name: "김제시", lat: 35.8035, lng: 126.8804, desc: "호남평야" },
-        { name: "목포시", lat: 34.8118, lng: 126.3922, desc: "항구와 근대 역사의 도시" },
-        { name: "여수시", lat: 34.7604, lng: 127.6622, desc: "해양관광 도시" },
-        { name: "순천시", lat: 34.9507, lng: 127.4872, desc: "순천만 습지" },
-        { name: "나주시", lat: 35.0160, lng: 126.7108, desc: "에너지 혁신도시" },
-        { name: "광양시", lat: 34.9407, lng: 127.6959, desc: "포스코 제철" },
-        { name: "포항시", lat: 36.0190, lng: 129.3520, desc: "철강 산업의 중심" },
-        { name: "경주시", lat: 35.8562, lng: 129.2247, desc: "천년고도 신라 수도" },
-        { name: "김천시", lat: 36.1394, lng: 128.1136, desc: "교통의 요충지" },
-        { name: "영주시", lat: 36.8057, lng: 128.6241, desc: "소백산 관문" },
-        { name: "영천시", lat: 35.9733, lng: 128.9386, desc: "별의 도시" },
-        { name: "상주시", lat: 36.4159, lng: 128.1595, desc: "곶감 도시" },
-        { name: "문경시", lat: 36.5864, lng: 128.1991, desc: "사과·관문도시" },
-        { name: "경산시", lat: 35.8250, lng: 128.7414, desc: "대구 위성도시" },
-        { name: "진주시", lat: 35.1803, lng: 128.1076, desc: "서부 경남의 교육 도시" },
-        { name: "통영시", lat: 34.8544, lng: 128.4332, desc: "한려수도" },
-        { name: "사천시", lat: 35.0036, lng: 128.0644, desc: "항공우주 산업" },
-        { name: "김해시", lat: 35.2286, lng: 128.8893, desc: "가야 역사도시" },
-        { name: "밀양시", lat: 35.5039, lng: 128.7467, desc: "영남 알프스" },
-        { name: "거제시", lat: 34.8806, lng: 128.6210, desc: "조선 산업" },
-        { name: "양산시", lat: 35.3350, lng: 129.0373, desc: "부산 배후도시" },
-        { name: "서귀포시", lat: 33.2541, lng: 126.5601, desc: "한라산 남쪽 도시" }
-      ],
-      4: [
-        { name: "연천군", lat: 38.0964, lng: 127.0748, desc: "비무장지대 접경 생태지역" },
-        { name: "가평군", lat: 37.8314, lng: 127.5096, desc: "계곡과 호수가 어우러진 휴양지" },
-        { name: "양평군", lat: 37.4919, lng: 127.4875, desc: "수도권 대표 수변 자연친화 도시" },
-        { name: "홍천군", lat: 37.6972, lng: 127.8888, desc: "넓은 산림과 청정 계곡을 품은 고장" },
-        { name: "횡성군", lat: 37.4912, lng: 127.9856, desc: "전국 최고 한우와 농촌 체험 중심지" },
-        { name: "영월군", lat: 37.1833, lng: 128.4611, desc: "동강 절경과 별빛이 가득한 산촌" },
-        { name: "평창군", lat: 37.3700, lng: 128.3900, desc: "동계올림픽과 고원 목장의 도시" },
-        { name: "정선군", lat: 37.3800, lng: 128.6600, desc: "아리랑과 탄광 유산이 남은 고장" },
-        { name: "철원군", lat: 38.1466, lng: 127.3137, desc: "분단의 역사와 철새가 공존하는 곳" },
-        { name: "화천군", lat: 38.1063, lng: 127.7083, desc: "산천어 축제와 맑은 계곡의 고장" },
-        { name: "양구군", lat: 38.1106, lng: 127.9906, desc: "국토 중심의 청정 자연 산촌 지역" },
-        { name: "인제군", lat: 38.0696, lng: 128.1706, desc: "설악산 자락과 래프팅 명소" },
-        { name: "고성군", lat: 38.3800, lng: 128.4670, desc: "금강산 관문과 해안 절경의 고장" },
-        { name: "양양군", lat: 38.0750, lng: 128.6190, desc: "서핑과 해변이 살아있는 동해 도시" },
-        { name: "보은군", lat: 36.4894, lng: 127.7294, desc: "속리산 품은 전통 농촌과 관광지" },
-        { name: "옥천군", lat: 36.3064, lng: 127.5713, desc: "향수 문학과 금강이 흐르는 고장" },
-        { name: "영동군", lat: 36.1750, lng: 127.7769, desc: "포도 향기 가득한 과일 와인 도시" },
-        { name: "증평군", lat: 36.7840, lng: 127.5820, desc: "충북에서 가장 젊고 작은 군 지역" },
-        { name: "진천군", lat: 36.8554, lng: 127.4431, desc: "국가대표 선수촌과 산업의 중심" },
-        { name: "괴산군", lat: 36.8122, lng: 127.7944, desc: "산막이옛길과 청정 농산물의 고장" },
-        { name: "음성군", lat: 36.9400, lng: 127.6900, desc: "반도체와 농업이 공존하는 성장지" },
-        { name: "단양군", lat: 36.9845, lng: 128.3657, desc: "도담삼봉과 단양팔경의 관광도시" },
-        { name: "금산군", lat: 36.1089, lng: 127.4889, desc: "전국 인삼 유통과 약초 산업의 중심" },
-        { name: "부여군", lat: 36.2750, lng: 126.9094, desc: "백제 문화유산이 살아있는 역사고장" },
-        { name: "서천군", lat: 36.0776, lng: 126.6917, desc: "국립생태원과 철새가 머무는 지역" },
-        { name: "청양군", lat: 36.4583, lng: 126.8028, desc: "칠갑산과 고추로 유명한 농촌지역" },
-        { name: "예산군", lat: 36.6808, lng: 126.8452, desc: "윤봉길 의사의 정신이 깃든 고장" },
-        { name: "태안군", lat: 36.7456, lng: 126.2979, desc: "서해안 해변 관광지" },
-        { name: "완주군", lat: 35.9058, lng: 127.1622, desc: "전주 배후 산업과 생태 도시로 성장" },
-        { name: "진안군", lat: 35.7917, lng: 127.4242, desc: "마이산과 고원 지대가 아름다운 고장" },
-        { name: "무주군", lat: 36.0064, lng: 127.6628, desc: "덕유산 설경과 태권도 문화의 도시" },
-        { name: "장수군", lat: 35.6475, lng: 127.5208, desc: "고원 청정 지역과 사과 재배 중심지" },
-        { name: "임실군", lat: 35.6178, lng: 127.2883, desc: "치즈 체험과 농촌 관광의 대표 지역" },
-        { name: "순창군", lat: 35.3744, lng: 127.1372, desc: "전통 고추장과 발효 문화의 본고장" },
-        { name: "고창군", lat: 35.4349, lng: 126.7018, desc: "고인돌과 청보리밭이 유명한 고장" },
-        { name: "부안군", lat: 35.7316, lng: 126.7335, desc: "변산반도 국립공원과 해안 절경" },
-        { name: "담양군", lat: 35.3215, lng: 126.9881, desc: "대나무 숲과 한옥이 어우러진 생태도시" },
-        { name: "곡성군", lat: 35.2820, lng: 127.2920, desc: "섬진강이 흐르는 기차 마을" },
-        { name: "구례군", lat: 35.2020, lng: 127.4620, desc: "지리산 자락의 자연과 전통" },
-        { name: "고흥군", lat: 34.6111, lng: 127.2853, desc: "우주센터와 청정 해역의 고장" },
-        { name: "보성군", lat: 34.7710, lng: 127.0809, desc: "녹차밭과 바다 풍경이 아름다운 도시" },
-        { name: "화순군", lat: 35.0615, lng: 127.0023, desc: "고인돌과 온천 자원이 풍부한 고장" },
-        { name: "장흥군", lat: 34.6811, lng: 126.9075, desc: "문학과 약초가 살아 숨 쉬는 고장" },
-        { name: "강진군", lat: 34.6422, lng: 126.7670, desc: "고려청자와 다산의 흔적이 남은 곳" },
-        { name: "해남군", lat: 34.5734, lng: 126.5990, desc: "땅끝마을과 남도 문화의 시작점" },
-        { name: "영암군", lat: 34.8006, lng: 126.6997, desc: "월출산과 국제경주장이 있는 고장" },
-        { name: "함평군", lat: 35.0650, lng: 126.5167, desc: "나비축제와 친환경 농업의 고장" },
-        { name: "영광군", lat: 35.2776, lng: 126.5124, desc: "굴비와 원전 산업이 함께하는 지역" },
-        { name: "장성군", lat: 35.3018, lng: 126.7843, desc: "황룡강과 숲길이 아름다운 생태도시" },
-        { name: "완도군", lat: 34.3119, lng: 126.7551, desc: "청정 바다와 전복 산업의 중심" },
-        { name: "진도군", lat: 34.4869, lng: 126.2636, desc: "신비의 바닷길과 민속 문화의 고장" },
-        { name: "신안군", lat: 34.8265, lng: 126.1088, desc: "천사섬과 염전 풍경이 이어진 군도" },
-        { name: "의성군", lat: 36.3526, lng: 128.6971, desc: "마늘 재배와 전통 농업이 발달한 지역" },
-        { name: "청송군", lat: 36.4332, lng: 129.0571, desc: "청송사과와 주왕산 절경의 고장" },
-        { name: "영양군", lat: 36.6664, lng: 129.1127, desc: "고추와 별빛이 어우러진 산촌 마을" },
-        { name: "영덕군", lat: 36.4151, lng: 129.3656, desc: "대게와 동해 바다가 유명한 어촌도시" },
-        { name: "청도군", lat: 35.6472, lng: 128.7340, desc: "반시와 소싸움으로 유명한 전통 고장" },
-        { name: "고령군", lat: 35.7260, lng: 128.2640, desc: "대가야 역사 유적이 남아있는 고장" },
-        { name: "성주군", lat: 35.9183, lng: 128.2887, desc: "참외 특산과 농업 중심의 평야 도시" },
-        { name: "칠곡군", lat: 36.0160, lng: 128.4613, desc: "낙동강과 산업단지가 성장한 교통지" },
-        { name: "예천군", lat: 36.6544, lng: 128.4373, desc: "양궁 국가대표를 배출한 스포츠 고장" },
-        { name: "봉화군", lat: 36.8936, lng: 128.7346, desc: "백두대간 깊은 숲과 청정 자연 지역" },
-        { name: "울진군", lat: 36.9931, lng: 129.4007, desc: "원자력과 해양 관광이 공존하는 도시" },
-        { name: "의령군", lat: 35.3222, lng: 128.2611, desc: "의병 정신과 농촌 전통이 살아있는 곳" },
-        { name: "함안군", lat: 35.2720, lng: 128.4060, desc: "아라가야 유적과 평야 농업 중심지" },
-        { name: "창녕군", lat: 35.5445, lng: 128.4925, desc: "우포늪과 철새 생태가 살아있는 고장" },
-        { name: "남해군", lat: 34.8370, lng: 127.8924, desc: "아름다운 보물섬" },
-        { name: "하동군", lat: 35.0673, lng: 127.7511, desc: "섬진강과 녹차밭이 이어진 청정 지역" },
-        { name: "산청군", lat: 35.4156, lng: 127.8731, desc: "한방과 약초 산업이 발달한 산촌 도시" },
-        { name: "함양군", lat: 35.5204, lng: 127.7272, desc: "지리산 자락과 전통 문화가 남은 곳" },
-        { name: "거창군", lat: 35.6867, lng: 127.9094, desc: "교육과 농업이 함께 성장하는 고원도시" },
-        { name: "합천군", lat: 35.5667, lng: 128.1650, desc: "해인사와 호수 풍경이 아름다운 고장" }
-      ],
-      5: [
-        { city: "서울", name: "종로구", lat: 37.5735, lng: 126.9790, desc: "궁궐과 역사 문화 중심지" },
-        { city: "서울", name: "중구", lat: 37.5638, lng: 126.9976, desc: "행정과 금융 관광 핵심" },
-        { city: "서울", name: "용산구", lat: 37.5326, lng: 126.9906, desc: "국제 문화와 교통 요충지" },
-        { city: "서울", name: "성동구", lat: 37.5633, lng: 127.0364, desc: "한강 북안 주거와 산업 조화" },
-        { city: "서울", name: "광진구", lat: 37.5385, lng: 127.0823, desc: "한강과 대학가 문화" },
-        { city: "서울", name: "동대문구", lat: 37.5744, lng: 127.0396, desc: "전통시장과 패션산업 발달" },
-        { city: "서울", name: "중랑구", lat: 37.6063, lng: 127.0926, desc: "주거와 녹지의 조화" },
-        { city: "서울", name: "성북구", lat: 37.5894, lng: 127.0167, desc: "대학과 문화예술 공존" },
-        { city: "서울", name: "강북구", lat: 37.6396, lng: 127.0257, desc: "북한산 자락의 생태 주거지" },
-        { city: "서울", name: "도봉구", lat: 37.6688, lng: 127.0471, desc: "서울 북부의 관문" },
-        { city: "서울", name: "노원구", lat: 37.6542, lng: 127.0568, desc: "대표적인 교육 중심 주거지" },
-        { city: "서울", name: "은평구", lat: 37.6176, lng: 126.9227, desc: "북한산 아래 쾌적한 전원 도시" },
-        { city: "서울", name: "서대문구", lat: 37.5794, lng: 126.9368, desc: "대학과 역사가 숨쉬는 곳" },
-        { city: "서울", name: "마포구", lat: 37.5663, lng: 126.9014, desc: "홍대 거리와 미디어 산업" },
-        { city: "서울", name: "양천구", lat: 37.5169, lng: 126.8666, desc: "목동 중심의 교육 도시" },
-        { city: "서울", name: "강서구", lat: 37.5510, lng: 126.8495, desc: "마곡지구와 김포공항" },
-        { city: "서울", name: "구로구", lat: 37.4954, lng: 126.8874, desc: "디지털 산업의 메카" },
-        { city: "서울", name: "금천구", lat: 37.4569, lng: 126.8954, desc: "G밸리 산업의 중심" },
-        { city: "서울", name: "영등포구", lat: 37.5260, lng: 126.8963, desc: "여의도 금융과 방송" },
-        { city: "서울", name: "동작구", lat: 37.5124, lng: 126.9393, desc: "노량진과 주거 단지" },
-        { city: "서울", name: "관악구", lat: 37.4784, lng: 126.9516, desc: "서울대와 청년의 거리" },
-        { city: "서울", name: "서초구", lat: 37.4837, lng: 127.0324, desc: "법조 타운과 문화 예술" },
-        { city: "서울", name: "강남구", lat: 37.5172, lng: 127.0473, desc: "경제와 트렌드의 중심" },
-        { city: "서울", name: "송파구", lat: 37.5145, lng: 127.1059, desc: "잠실과 잠실운동장" },
-        { city: "서울", name: "강동구", lat: 37.5301, lng: 127.1238, desc: "한강 동쪽 끝 주거지" },
-        { city: "부산", name: "중구", lat: 35.1063, lng: 129.0324, desc: "남포동 국제시장 상권" },
-        { city: "부산", name: "서구", lat: 35.0979, lng: 129.0246, desc: "송도해수욕장과 의료 거점" },
-        { city: "부산", name: "동구", lat: 35.1293, lng: 129.0453, desc: "부산역과 항만 물류" },
-        { city: "부산", name: "영도구", lat: 35.0912, lng: 129.0677, desc: "태종대와 해양 산업" },
-        { city: "부산", name: "부산진구", lat: 35.1629, lng: 129.0531, desc: "서면 도심 상업 중심" },
-        { city: "부산", name: "동래구", lat: 35.2052, lng: 129.0837, desc: "전통 교육지와 온천지" },
-        { city: "부산", name: "남구", lat: 35.1367, lng: 129.0840, desc: "대학로와 신선대 부두" },
-        { city: "부산", name: "북구", lat: 35.1973, lng: 128.9911, desc: "낙동강변 대규모 주거지" },
-        { city: "부산", name: "해운대구", lat: 35.1631, lng: 129.1636, desc: "국제 관광과 해변 도시" },
-        { city: "부산", name: "사하구", lat: 35.1044, lng: 128.9680, desc: "다대포와 을숙도 생태" },
-        { city: "부산", name: "금정구", lat: 35.2429, lng: 129.0922, desc: "금정산과 부산대 인접" },
-        { city: "부산", name: "강서구", lat: 35.2122, lng: 128.9805, desc: "가덕도 신공항 예정지" },
-        { city: "부산", name: "연제구", lat: 35.1762, lng: 129.0794, desc: "부산시청 행정 중심지" },
-        { city: "부산", name: "수영구", lat: 35.1456, lng: 129.1132, desc: "광안대교와 해변 문화" },
-        { city: "부산", name: "사상구", lat: 35.1526, lng: 128.9914, desc: "교통 허브와 산업 거점" },
-        { city: "대구", name: "중구", lat: 35.8694, lng: 128.6062, desc: "동성로 대구의 중심" },
-        { city: "대구", name: "동구", lat: 35.8865, lng: 128.6354, desc: "대구공항과 신천" },
-        { city: "대구", name: "수성구", lat: 35.8580, lng: 128.6306, desc: "교육 명문과 금융 중심" },
-        { city: "대구", name: "달서구", lat: 35.8299, lng: 128.5327, desc: "두류공원과 최대 인구 구" },
-        { city: "인천", name: "중구", lat: 37.4738, lng: 126.6216, desc: "인천항과 차이나타운" },
-        { city: "인천", name: "연수구", lat: 37.4102, lng: 126.6783, desc: "송도 국제 업무 지구" },
-        { city: "인천", name: "부평구", lat: 37.5070, lng: 126.7219, desc: "부평역 중심의 상업지" },
-        { city: "인천", name: "서구", lat: 37.5454, lng: 126.6750, desc: "청라 신도시와 환경 특구" },
-        { city: "광주", name: "동구", lat: 35.1467, lng: 126.9233, desc: "충장로 광주의 원도심" },
-        { city: "광주", name: "서구", lat: 35.1525, lng: 126.8914, desc: "상무지구 행정 타운" },
-        { city: "대전", name: "서구", lat: 36.3510, lng: 127.3795, desc: "정부청사 행정 중심지" },
-        { city: "대전", name: "유성구", lat: 36.3621, lng: 127.3560, desc: "대덕특구와 과학 도시" },
-        { city: "울산", name: "남구", lat: 35.5438, lng: 129.3307, desc: "공단과 상업의 중심" },
-        { city: "울산", name: "북구", lat: 35.5824, lng: 129.3614, desc: "현대차 생산 거점" }
-      ]
-    };
 
     let level = parseInt(localStorage.getItem('selectedLevel')) || 1;
     let cityPool = [], map, playerMarker, answerMarker, currentCity, totalAccuracy = 0, roundCount = 0;
@@ -412,38 +208,51 @@
     }
 
     function initMap() {
+      // 맵 인스턴스가 없을 때만 새로 생성 (메모리 효율)
+      if (!map) {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 36.5, lng: 127.5 }, zoom: 7, mapTypeId: "satellite", disableDefaultUI: true, gestureHandling: "greedy"
+        });
+
+        map.data.loadGeoJson('https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2013/json/skorea_municipalities_geo.json');
+        map.data.setStyle({ fillColor: 'transparent', strokeColor: '#ffffff', strokeWeight: 0.6, strokeOpacity: 0.4, clickable: false });
+
+        playerMarker = new google.maps.Marker({ map: null, icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" });
+        answerMarker = new google.maps.Marker({ map: null, icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" });
+
+        map.addListener("click", (event) => {
+          if (document.getElementById("info-Container").style.display === "none") {
+            playerMarker.setMap(map); playerMarker.setPosition(event.latLng);
+            document.getElementById("submitGuess").style.display = "block";
+          }
+        });
+
+        document.getElementById("submitGuess").onclick = checkAnswer;
+        document.getElementById("nextQuestion").onclick = startNewRound;
+        document.getElementById("showResultBtn").onclick = showFinalResult;
+        document.getElementById("repeatLevel").onclick = () => { setupLevel(); resetUI(); };
+        document.getElementById("tryAgain").onclick = () => { setupLevel(); resetUI(); };
+        document.getElementById("nextLevel").onclick = () => { level++; setupLevel(); resetUI(); };
+        document.getElementById("saveRank").onclick = saveToHallOfFame;
+      }
+
+      setupLevel();
+    }
+
+    function setupLevel() {
       totalAccuracy = 0; roundCount = 0;
       if (level > 5) level = 5;
       document.getElementById("level-display").innerText = level;
       const targetData = levelData[level] || levelData[1];
       cityPool = shuffle([...targetData]);
-
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 36.5, lng: 127.5 }, zoom: 7, mapTypeId: "satellite", disableDefaultUI: true, gestureHandling: "greedy"
-      });
-
-      map.data.loadGeoJson('https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2013/json/skorea_municipalities_geo.json');
-      map.data.setStyle({ fillColor: 'transparent', strokeColor: '#ffffff', strokeWeight: 0.6, strokeOpacity: 0.4, clickable: false });
-
-      playerMarker = new google.maps.Marker({ map: null, icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" });
-      answerMarker = new google.maps.Marker({ map: null, icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" });
-
-      map.addListener("click", (event) => {
-        if (document.getElementById("info-Container").style.display === "none") {
-          playerMarker.setMap(map); playerMarker.setPosition(event.latLng);
-          document.getElementById("submitGuess").style.display = "block";
-        }
-      });
-
-      document.getElementById("submitGuess").onclick = checkAnswer;
-      document.getElementById("nextQuestion").onclick = startNewRound;
-      document.getElementById("showResultBtn").onclick = showFinalResult;
-      document.getElementById("repeatLevel").onclick = () => { initMap(); resetUI(); };
-      document.getElementById("tryAgain").onclick = () => { initMap(); resetUI(); };
-      document.getElementById("nextLevel").onclick = () => { level++; initMap(); resetUI(); };
-      document.getElementById("saveRank").onclick = saveToHallOfFame;
-
       startNewRound();
+    }
+
+    function resetMapView() {
+      if (map) {
+        map.setCenter({ lat: 36.5, lng: 127.5 });
+        map.setZoom(7);
+      }
     }
 
     function resetUI() {
@@ -453,6 +262,7 @@
     }
 
     function startNewRound() {
+      resetMapView();
       document.getElementById("nextQuestion").style.display = "none";
       document.getElementById("info-Container").style.display = "none";
       document.getElementById("showResultBtn").style.display = "none";
@@ -484,6 +294,51 @@
 
       answerMarker.setPosition(cityPos); answerMarker.setMap(map);
       document.getElementById("descriptionContainer").innerText = currentCity.desc;
+
+      // 정답 위치(초록 마커)를 상단 40%에 배치하고, 
+      // 사용자 선택(파란 마커)이 화면 안에 고루 들어오도록 지능적 줌 조절
+      const posG = currentCity;
+      const posB = playerMarker.getPosition();
+      const latDiff = Math.abs(posG.lat - posB.lat());
+      const lngDiff = Math.abs(posG.lng - posB.lng());
+      const height = document.getElementById("map").offsetHeight;
+      const width = document.getElementById("map").offsetWidth;
+
+      // 위도/경도 1도당 픽셀 수 (한국 지역 Heuristic)
+      const getPixelsPerLat = (z) => 0.88 * Math.pow(2, z);
+      const getPixelsPerLng = (z) => 0.70 * Math.pow(2, z);
+
+      let targetZoom = 12;
+      for (let z = 12; z >= 5; z--) {
+        const pxLat = getPixelsPerLat(z);
+        const pxLng = getPixelsPerLng(z);
+        const isLngOk = (lngDiff * pxLng) <= (width * 0.4);
+        let isLatOk = false;
+        if (posB.lat() < posG.lat) { // 파란 마커가 남쪽
+          isLatOk = (latDiff * pxLat) <= (height * 0.2);
+        } else { // 파란 마커가 북쪽
+          isLatOk = (latDiff * pxLat) <= (height * 0.4);
+        }
+        if (isLngOk && isLatOk) {
+          targetZoom = z;
+          break;
+        }
+      }
+
+      map.setZoom(targetZoom);
+      map.panTo(cityPos);
+
+      // 정답 마커 강조: 라벨 추가 및 애니메이션
+      answerMarker.setLabel({ text: "정답", color: "white", fontWeight: "bold", fontSize: "14px" });
+      answerMarker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(() => answerMarker.setAnimation(null), 3000); // 3초 후 애니메이션 중단
+
+      google.maps.event.addListenerOnce(map, 'idle', () => {
+        map.panBy(0, height * 0.1);
+      });
+
+      // 음성 안내 기능 추가 (TTS)
+      speak(currentCity.desc);
 
       if (roundCount < 3) document.getElementById("nextQuestion").style.display = "block";
       else document.getElementById("showResultBtn").style.display = "block";
@@ -543,6 +398,27 @@
       localStorage.setItem('hallOfFame', JSON.stringify(fameData.slice(0, 5)));
       location.href = 'index.html';
     }
+
+    // 고품질 음성 안내 (TTS)
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        // 이전 음성 중단
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        // 고품질 한국어 음성 찾기 시도
+        const voices = window.speechSynthesis.getVoices();
+        const koVoice = voices.find(v => v.lang.includes('ko') && (v.name.includes('Google') || v.name.includes('Premium')));
+        if (koVoice) utterance.voice = koVoice;
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+    // 음성 목록 미리 로드 (일부 브라우저 대응)
+    window.speechSynthesis.getVoices();
   </script>
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEGmiiFjkqhyKBRuFfdz3WqpPzLleeDMA&libraries=geometry&callback=initMap"
