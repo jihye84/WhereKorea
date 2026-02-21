@@ -1,67 +1,208 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>어디일까요? - 한국 지리 퀴즈</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root { --primary-color: #0d6efd; --bg-color: #f8f9fa; }
-        body { background-color: var(--bg-color); font-family: 'Pretendard', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .main-container { max-width: 800px; padding: 40px 20px; text-align: center; }
-        .title-section { margin-bottom: 40px; }
-        .title-section h1 { font-weight: 800; color: #333; font-size: 2.5rem; letter-spacing: -1px; }
-        .title-section p { color: #666; font-size: 1.1rem; }
-
-        .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 30px; }
-        
-        .level-card {
-            background: white; border-radius: 20px; padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s ease;
-            text-decoration: none; color: inherit; display: block; border: 2px solid transparent;
+        :root {
+            --primary-color: #0d6efd;
+            --bg-color: #f8f9fa;
         }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Pretendard', sans-serif;
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden !important;
+            margin: 0;
+            padding: 0;
+            touch-action: none;
+        }
+
+        .main-container {
+            width: 100%;
+            height: 100%;
+            max-width: 1000px;
+            padding: 2vh 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden !important;
+        }
+
+        .title-section {
+            flex: 0 0 auto;
+            margin-bottom: 2vh;
+        }
+
+        .title-section h1 {
+            font-weight: 800;
+            color: #333;
+            font-size: clamp(1.5rem, 4vh, 2.2rem);
+            letter-spacing: -1px;
+            margin-bottom: 0.5vh;
+        }
+
+        .title-section p {
+            color: #666;
+            font-size: clamp(0.8rem, 2vh, 1rem);
+            margin-bottom: 0;
+        }
+
+        .level-grid {
+            flex: 1 1 auto;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5vh 1vw;
+            margin-bottom: 2vh;
+            min-height: 0;
+        }
+
+        .level-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5vh 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
         .level-card:hover {
-            transform: translateY(-10px); border-color: var(--primary-color);
-            box-shadow: 0 12px 30px rgba(13, 110, 253, 0.15);
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 15px rgba(13, 110, 253, 0.15);
         }
 
         .level-badge {
-            display: inline-block; padding: 5px 15px; border-radius: 30px;
-            font-size: 0.8rem; font-weight: bold; margin-bottom: 15px;
+            display: inline-block;
+            padding: 0.3vh 10px;
+            border-radius: 20px;
+            font-size: clamp(0.6rem, 1.5vh, 0.7rem);
+            font-weight: bold;
+            margin-bottom: 1vh;
+            flex: 0 0 auto;
         }
-        .lv1 { background: #e7f1ff; color: #0d6efd; }
-        .lv2 { background: #fff4e5; color: #fd7e14; }
-        .lv3 { background: #f3f0ff; color: #7950f2; }
-        .lv4 { background: #ebfbee; color: #40c057; }
-        .lv5 { background: #fff5f5; color: #fa5252; }
 
-        .level-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; color: #222; }
-        .level-desc { font-size: 0.9rem; color: #777; line-height: 1.5; }
-
-        /* 🏆 명예의 전당 스타일 */
-        .hall-of-fame-section {
-            margin-top: 50px; background: white; border-radius: 25px; padding: 30px;
-            border: 2px solid #ffd700; box-shadow: 0 10px 25px rgba(255, 215, 0, 0.1);
+        .lv1 {
+            background: #e7f1ff;
+            color: #0d6efd;
         }
-        .fame-title { color: #856404; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .fame-grid { display: flex; flex-direction: column; gap: 10px; }
-        .fame-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 20px; background: #fffdf5; border-radius: 15px; border: 1px solid #fef3c7;
-            animation: fadeIn 0.5s ease forwards; opacity: 0;
-        }
-        .fame-name { font-weight: 700; color: #333; }
-        .fame-score { color: #dc3545; font-weight: 800; font-size: 1.1rem; }
-        .empty-msg { color: #aaa; font-size: 0.9rem; padding: 10px; }
 
-        .footer-note { margin-top: 50px; font-size: 0.85rem; color: #aaa; }
+        .lv2 {
+            background: #fff4e5;
+            color: #fd7e14;
+        }
+
+        .lv3 {
+            background: #f3f0ff;
+            color: #7950f2;
+        }
+
+        .lv4 {
+            background: #ebfbee;
+            color: #40c057;
+        }
+
+        .lv5 {
+            background: #fff5f5;
+            color: #fa5252;
+        }
+
+        .level-title {
+            font-size: clamp(0.9rem, 2vh, 1.05rem);
+            font-weight: 700;
+            margin-bottom: 0.5vh;
+            color: #222;
+            text-align: center;
+        }
+
+        .level-desc {
+            font-size: clamp(0.7rem, 1.5vh, 0.8rem);
+            color: #777;
+            line-height: 1.2;
+            text-align: center;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: keep-all;
+        }
+
+
+        .footer-note {
+            flex: 0 0 auto;
+            margin-top: 1.5vh;
+            font-size: clamp(0.65rem, 1.2vh, 0.75rem);
+            color: #aaa;
+        }
+
+        @media (max-width: 992px) {
+            .level-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .level-grid {
+                grid-template-columns: repeat(1, 1fr);
+                gap: 1vh;
+            }
+
+            .level-card {
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 1.5vh 20px;
+            }
+
+            .level-badge {
+                margin-bottom: 0;
+                margin-right: 15px;
+            }
+
+            .level-title {
+                margin-bottom: 0;
+                margin-right: auto;
+                text-align: left;
+            }
+
+            .level-desc {
+                display: none;
+            }
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="main-container">
@@ -102,12 +243,6 @@
             </a>
         </div>
 
-        <div class="hall-of-fame-section">
-            <h4 class="fame-title">👑 Level 5 마스터즈 👑</h4>
-            <div id="fame-list-main" class="fame-grid">
-                <p class="empty-msg">아직 기록이 없습니다. 첫 마스터가 되어보세요!</p>
-            </div>
-        </div>
 
         <div class="footer-note">
             제작: 지혜 (jihye84) | 2026 어디일까요? 프로젝트
@@ -120,35 +255,8 @@
             localStorage.setItem('selectedLevel', lv);
         }
 
-        // 명예의 전당 로드 함수
-        function loadHallOfFame() {
-            const fameDataRaw = localStorage.getItem('hallOfFame');
-            const listDiv = document.getElementById("fame-list-main");
-            
-            if (!fameDataRaw) return;
 
-            const fameData = JSON.parse(fameDataRaw);
-            
-            if (fameData.length > 0) {
-                listDiv.innerHTML = fameData.map((e, index) => `
-                    <div class="fame-item" style="animation-delay: ${index * 0.1}s;">
-                        <div>
-                            <span class="me-2 text-warning" style="font-weight: 900;">#${index + 1}</span>
-                            <span class="fame-name">${e.name}</span>
-                        </div>
-                        <div>
-                            <span class="fame-score">${e.score}%</span>
-                            <small class="text-muted ms-3" style="font-size:0.7rem;">${e.date}</small>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // 페이지 로드 시 실행
-        window.addEventListener('DOMContentLoaded', loadHallOfFame);
-        // 다른 탭에서 돌아왔을 때 데이터 갱신
-        window.addEventListener('focus', loadHallOfFame);
     </script>
 </body>
+
 </html>
